@@ -1,24 +1,56 @@
 # 🧩 Inventory Management System (Spring Boot + MongoDB + JWT)
 
-A comprehensive **Inventory Management System** built using **Java Spring Boot**, **MongoDB**, and **JWT Authentication**.  
-This project helps businesses efficiently manage **products, stock levels, and orders** through a secure and scalable backend.
+A **comprehensive and secure Inventory Management System** built with **Java Spring Boot**, **MongoDB**, and **JWT Authentication**.  
+This project helps businesses efficiently **manage products, track stock levels, and monitor orders** through a **scalable and modular backend architecture**.
 
-### 🚀 Tech Stack
-- **Backend:** Spring Boot (Java)
-- **Database:** MongoDB
-- **Security:** JWT Authentication
-- **API Type:** RESTful APIs
+---
 
-### 🔑 Features
-- Add, update, and delete products
-- Track stock quantity and orders
-- User authentication with JWT
-- Scalable and easily customizable architecture
+## 🚀 Tech Stack
+
+| Layer | Technology |
+| :-- | :-- |
+| **Backend** | Spring Boot (Java) |
+| **Database** | MongoDB |
+| **Security** | JWT Authentication |
+| **API Type** | RESTful APIs |
+| **Architecture** | Domain-Driven Design (DDD), Hexagonal Architecture |
+
+---
+
+## 🧱 Architecture Overview
+
+This system follows **Domain-Driven Design (DDD)** and **Hexagonal Architecture** principles to ensure:  
+- Clear separation between **domain logic** and **infrastructure layers**  
+- **High testability** and **flexibility** for future feature integration  
+- Enhanced **scalability** and **maintainability**  
+
+---
+
+
+## 📸 Screenshots
+
+| Register View| 
+|:------------:|
+|![ss2](https://github.com/user-attachments/assets/b5a28a73-be36-4cd3-bb57-99425a91a443)|
+|LogIn View |
+|![ss1](https://github.com/user-attachments/assets/a830ae1c-db24-48c0-82d6-cb3f0819243f)|
+| Dashboard |
+|![ss3](https://github.com/user-attachments/assets/0b716775-bb51-41b9-ab3e-7bc6477d5772)|
+| Product List View |
+|![ss4](https://github.com/user-attachments/assets/017ced56-c154-4b5c-acb7-e0a6ab406de5)|
+| Add Products View | 
+|![556](https://github.com/user-attachments/assets/cd209a25-8fd1-43f2-addd-4f62e2694951)|
+|Edit Products View |
+|![ss5](https://github.com/user-attachments/assets/cc2d1db5-0bfb-496b-8ae4-6ee09fdadd5c)|
+
+---
+
+## ⚙️ Getting Started
 
 Setup and Installation:
 
     Clone the repository:
-    git clone https://github.com/yashtank86/inventory-management-software.git
+    git clone https://github.com/yashtank86/inventory-management-system-springboot-mongodb.git
 
 Install Dependencies:
 
@@ -58,25 +90,28 @@ License:
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 
+---
+<!--
+### 🔑 Features
+- Add, update, and delete products
+- Track stock quantity and orders
+- User authentication with JWT
+- Scalable and easily customizable architecture
+-->
 
-##screenshots:
+## ✅ Future Enhancements
 
-| Register View| 
-|:------------:|
-|![ss2](https://github.com/user-attachments/assets/b5a28a73-be36-4cd3-bb57-99425a91a443)|
-|LogIn View |
-|![ss1](https://github.com/user-attachments/assets/a830ae1c-db24-48c0-82d6-cb3f0819243f)|
-| Dashboard |
-|![ss3](https://github.com/user-attachments/assets/0b716775-bb51-41b9-ab3e-7bc6477d5772)|
-| Product List View |
-|![ss4](https://github.com/user-attachments/assets/017ced56-c154-4b5c-acb7-e0a6ab406de5)|
-| Add Products View | 
-|![556](https://github.com/user-attachments/assets/cd209a25-8fd1-43f2-addd-4f62e2694951)|
-|Edit Products View |
-|![ss5](https://github.com/user-attachments/assets/cc2d1db5-0bfb-496b-8ae4-6ee09fdadd5c)|
+- 📊 Add analytics and reporting dashboards
+- 🧠 Integrate AI-based stock demand forecasting
+- 🌐 Add a React or Angular frontend for user interface
+- 📨 Implement email notifications for low-stock alerts
 
- 
+---
 
+## 🤝 Contributing
+
+- Contributions, issues, and feature requests are welcome!
+- Feel free to fork the repo and submit a pull request.
 
 
 
