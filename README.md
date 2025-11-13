@@ -61,18 +61,19 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ##screenshots:
 
-| Register View| LogIn View |
-|:-:|:-:|
-|![ss2](https://github.com/user-attachments/assets/b5a28a73-be36-4cd3-bb57-99425a91a443)|![ss1](https://github.com/user-attachments/assets/a830ae1c-db24-48c0-82d6-cb3f0819243f)|
-
-
-| Dashboard | Product List View |
-|:-:|:-:|
-|![ss3](https://github.com/user-attachments/assets/0b716775-bb51-41b9-ab3e-7bc6477d5772)|![ss4](https://github.com/user-attachments/assets/017ced56-c154-4b5c-acb7-e0a6ab406de5)|
-
-| Add Products View | Edit Products View |
-|:-:|:-:|
-|![556](https://github.com/user-attachments/assets/cd209a25-8fd1-43f2-addd-4f62e2694951)|![ss5](https://github.com/user-attachments/assets/cc2d1db5-0bfb-496b-8ae4-6ee09fdadd5c)|
+| Register View| 
+|:------------:|
+|![ss2](https://github.com/user-attachments/assets/b5a28a73-be36-4cd3-bb57-99425a91a443)|
+|LogIn View |
+|![ss1](https://github.com/user-attachments/assets/a830ae1c-db24-48c0-82d6-cb3f0819243f)|
+| Dashboard |
+|![ss3](https://github.com/user-attachments/assets/0b716775-bb51-41b9-ab3e-7bc6477d5772)|
+| Product List View |
+|![ss4](https://github.com/user-attachments/assets/017ced56-c154-4b5c-acb7-e0a6ab406de5)|
+| Add Products View | 
+|![556](https://github.com/user-attachments/assets/cd209a25-8fd1-43f2-addd-4f62e2694951)|
+|Edit Products View |
+|![ss5](https://github.com/user-attachments/assets/cc2d1db5-0bfb-496b-8ae4-6ee09fdadd5c)|
 
  
 
