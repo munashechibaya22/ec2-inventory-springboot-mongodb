@@ -1,119 +1,115 @@
-# 🧩 Inventory Management System (Spring Boot + MongoDB + JWT)
+# 🧩 Spring Boot & MongoDB Inventory Management System (DevOps & IaC Edition)
 
-A **comprehensive and secure Inventory Management System** built with **Java Spring Boot**, **MongoDB**, and **JWT Authentication**.  
-This project helps businesses efficiently **manage products, track stock levels, and monitor orders** through a **scalable and modular backend architecture**.
+A secure, modular backend Inventory Management System built with **Java Spring Boot**, **MongoDB**, and **JWT Authentication**. 
 
----
-
-## 🚀 Tech Stack
-
-| Layer | Technology |
-| :-- | :-- |
-| **Backend** | Spring Boot (Java) |
-| **Database** | MongoDB |
-| **Security** | JWT Authentication |
-| **API Type** | RESTful APIs |
-| **Architecture** | Domain-Driven Design (DDD), Hexagonal Architecture |
+This repository has been fully enhanced with modern **Infrastructure as Code (IaC)**, **Docker containerization**, and a **hybrid AWS CodePipeline + Jenkins CI/CD pipeline** for automated cloud deployment.
 
 ---
 
-## 🧱 Architecture Overview
-
-This system follows **Domain-Driven Design (DDD)** and **Hexagonal Architecture** principles to ensure:  
-- Clear separation between **domain logic** and **infrastructure layers**  
-- **High testability** and **flexibility** for future feature integration  
-- Enhanced **scalability** and **maintainability**  
-
----
-
-
-## 📸 Screenshots
-
-| Register View| 
-|:------------:|
-|![ss2](https://github.com/user-attachments/assets/b5a28a73-be36-4cd3-bb57-99425a91a443)|
-|LogIn View |
-|![ss1](https://github.com/user-attachments/assets/a830ae1c-db24-48c0-82d6-cb3f0819243f)|
-| Dashboard |
-|![ss3](https://github.com/user-attachments/assets/0b716775-bb51-41b9-ab3e-7bc6477d5772)|
-| Product List View |
-|![ss4](https://github.com/user-attachments/assets/017ced56-c154-4b5c-acb7-e0a6ab406de5)|
-| Add Products View | 
-|![556](https://github.com/user-attachments/assets/cd209a25-8fd1-43f2-addd-4f62e2694951)|
-|Edit Products View |
-|![ss5](https://github.com/user-attachments/assets/cc2d1db5-0bfb-496b-8ae4-6ee09fdadd5c)|
+## 🛠️ Technology Stack & Badges
+![Java 17](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2.2-green?style=for-the-badge&logo=springboot)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-emerald?style=for-the-badge&logo=mongodb)
+![Docker & Compose](https://img.shields.io/badge/Docker_&_Compose-Orchestration-blue?style=for-the-badge&logo=docker)
+![Terraform](https://img.shields.io/badge/Terraform-Infrastructure_as_Code-purple?style=for-the-badge&logo=terraform)
+![AWS CodePipeline](https://img.shields.io/badge/AWS_CodePipeline-Orchestration-blue?style=for-the-badge&logo=amazonwebservices)
+![Jenkins](https://img.shields.io/badge/Jenkins-CD_Deploy-red?style=for-the-badge&logo=jenkins)
 
 ---
 
-## ⚙️ Getting Started
+## 🏗️ DevOps Deployment Architecture
 
-Setup and Installation:
+This project is deployed using a secure, automated hybrid pipeline architecture:
 
-    Clone the repository:
-    git clone https://github.com/yashtank86/inventory-management-system-springboot-mongodb.git
+```text
+ 💻 Local Push (main) 
+        │
+        ▼
+ 🐙 GitHub Repository
+        │
+        ▼
+ 🔄 AWS CodePipeline (Orchestrator)
+        │
+        ├──► 🔨 AWS CodeBuild (Build Agent)
+        │       ├── Packages Spring Boot JAR (mvnw)
+        │       ├── Packages Docker Image
+        │       ├── Pushes Container to Amazon ECR
+        │       └── Outputs Deploy Artifact (imageDetail.json)
+        │
+        └──► 🔴 Jenkins Server (Deploy Agent)
+                ├── Reads imageDetail.json ECR URI
+                ├── SSHs into Ubuntu EC2 host
+                ├── Authenticates EC2 Docker engine to AWS ECR
+                └── Restarts docker-compose stack (App + Mongo + Nginx)
+```
 
-Install Dependencies:
-
-    This project uses Maven for dependency management. Run the following command to install the dependencies:
-    mvn clean install
-
-Configure MongoDB:
-
-    Make sure you have MongoDB installed and running locally or use a MongoDB Atlas cloud instance.
-    Update the application.properties file to include your MongoDB connection details.
-    
-Configure JWT Secret:
-
-    Add your JWT secret key in the application.properties or application.yml file for secure token generation.
-    Example:
-    jwt.secret=your-secret-key
-    jwt.expiration=3600    
-
-Run the Application: To start the application, run the following command:
-
-    mvn spring-boot:run
-
-    The application will run on http://localhost:8086
-
-Endpoints:
-
-    GET /user/productList: Get all products in the inventory.
-    POST /user/addProduct: Add a new product to the inventory.
-    PUT /user/editProduct/{productId}: Update an existing product's details.
-    [pending] DELETE /api/products/{id}: Delete a product from the inventory.
-
-Contributing:
-
-Feel free to open issues or submit pull requests if you'd like to contribute to the development of this inventory management software.
-License:
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-
----
-<!--
-### 🔑 Features
-- Add, update, and delete products
-- Track stock quantity and orders
-- User authentication with JWT
-- Scalable and easily customizable architecture
--->
-
-## ✅ Future Enhancements
-
-- 📊 Add analytics and reporting dashboards
-- 🧠 Integrate AI-based stock demand forecasting
-- 🌐 Add a React or Angular frontend for user interface
-- 📨 Implement email notifications for low-stock alerts
+### Key Security & Routing Highlights:
+* **Private S3 & ECR Registry:** The application container image is stored in a private Amazon ECR repository.
+* **Nginx Reverse Proxy:** Nginx acts as the front gateway on the host, reverse proxying incoming public requests from Port `80` to internal container Port `8086`.
+* **Private MongoDB:** MongoDB port `27017` is containerized and restricted inside the Docker network. Database storage is persistent via a Docker volume.
 
 ---
 
-## 🤝 Contributing
+## 📁 Repository Directory Map
 
-- Contributions, issues, and feature requests are welcome!
-- Feel free to fork the repo and submit a pull request.
+```text
+├── .github/                    # (Optional) GitHub hooks
+├── app/                        # Spring Boot source code (Maven layout)
+├── buildspec.yml               # AWS CodeBuild task configuration
+├── docker-compose.yml          # Container configuration (App + MongoDB + Nginx)
+├── Dockerfile                  # Multi-stage Java compile and runtime Docker configuration
+├── Jenkinsfile                 # Jenkins CD deployment pipeline stages
+├── nginx.conf                  # Nginx reverse proxy routing details
+├── docs/
+│   ├── AWS_CONSOLE.md          # Manual AWS console provisioning instructions
+│   └── JENKINS_SETUP.md        # Detailed Jenkins installation & trigger setup guide
+├── scripts/
+│   ├── deploy.sh               # Local bash automation deploy script
+│   └── deploy.ps1              # Local PowerShell automation deploy script
+└── terraform/
+    ├── README.md               # Infrastructure deployment guide
+    ├── modules/                # Reusable IaC modules
+    │   ├── ec2/                # Provisions EC2 Ubuntu instance & installs Docker/Compose
+    │   └── security_groups/    # Security rules (SSH, HTTP, Jenkins dashboard)
+    └── environments/
+        └── dev/                # Dev environment values & CodePipeline config (pipeline.tf)
+```
 
+---
 
+## 🚀 Environments & Local Configuration
 
+### Local Development Setup:
+The project uses `.env` environment variables to override values in `src/main/resources/application.properties` dynamically.
+1. Copy the example environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+2. Build and run the local container stack:
+   ```bash
+   docker compose up -d
+   ```
+   The backend will be available at `http://localhost:80` (routed via Nginx to the Java backend).
 
+---
 
+## 🏗️ Managing Infrastructure with Terraform
+
+The infrastructure defaults to deploying inside AWS's **Default VPC** and public default subnets.
+
+To deploy:
+1. Generate an AWS SSH Key Pair and input its name in `terraform/environments/dev/terraform.tfvars`.
+2. Execute the Terraform stack:
+   ```bash
+   cd terraform/environments/dev
+   terraform init
+   terraform plan
+   terraform apply
+   ```
+
+---
+
+## 🔄 Setup CI/CD Pipeline
+For detailed step-by-step instructions on setting up AWS resources manually and linking Jenkins triggers, see:
+* **[AWS Web Console Setup Guide](docs/AWS_CONSOLE.md)**
+* **[Jenkins Server Configuration Guide](docs/JENKINS_SETUP.md)**
