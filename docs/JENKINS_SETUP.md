@@ -27,6 +27,9 @@ sudo apt-get update -y
 # Install OpenJDK 21 (Required by Jenkins)
 sudo apt-get install openjdk-21-jdk -y
 
+# Install AWS CLI (Required to authenticate with ECR)
+sudo apt-get install awscli -y
+
 # Add the Jenkins GPG key and Repository
 sudo mkdir -p /etc/apt/keyrings
 sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
@@ -39,6 +42,9 @@ echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] \
 # Update and install Jenkins
 sudo apt-get update -y
 sudo apt-get install jenkins -y
+
+# Allow jenkins user to execute local docker commands
+sudo usermod -aG docker jenkins
 
 # Start and enable Jenkins service
 sudo systemctl enable jenkins
@@ -59,43 +65,50 @@ sudo systemctl start jenkins
 ---
 
 ## Step 3: Install Required Plugins
-To support CodePipeline and SSH deployments, install the following plugins:
+To support CodePipeline deployments, install the following plugin:
 1. Go to **Manage Jenkins > Plugins > Available Plugins**.
 2. Search and install:
    * **AWS CodePipeline Plugin**: Integrates Jenkins jobs as custom build/deploy actions in AWS CodePipeline.
-   * **SSH Agent Plugin**: Allows Jenkins jobs to execute secure shell commands on target servers.
 3. Click **Install without restart** and check the box to restart Jenkins when done.
 
 ---
 
-## Step 4: Configure Credentials
-Add the EC2 SSH private key to Jenkins so the build executor can deploy to the host:
-1. Go to **Manage Jenkins > Credentials > System > Global credentials > Add Credentials**.
-2. Configure:
-   * **Kind**: SSH Username with private key.
-   * **Scope**: Global.
-   * **ID**: `ec2-ssh-key` (Must match the `SSH_CRED_ID` variable in the `Jenkinsfile`).
-   * **Username**: `ubuntu`
-   * **Private Key**: Select **Enter directly**, click **Add**, and paste the complete content of your downloaded private key (`.pem` file).
-3. Click **Create**.
+## Step 4: Configure Credentials (Optional)
+If you attached the IAM Instance Profile (`Jenkins-EC2-Role`) to your EC2 instance in the Prerequisites step, **you can skip this step entirely**. The AWS SDK will automatically authenticate.
 
 ---
 
-## Step 5: Configure Jenkins Pipeline Project
-Create the build job to connect to the repository:
+## Step 5: Configure Jenkins Freestyle Project
+Create the deployment job:
 1. From the Jenkins dashboard, click **New Item**.
 2. Enter name: `Inventory-Management-Deploy` (Must match the **Project name** value you configure in the AWS CodePipeline Jenkins action).
-3. Select **Pipeline** and click **OK**.
-4. Under **Build Triggers**, check **Poll SCM** and set schedule to `* * * * *` (polls AWS CodePipeline every minute) or `H/2 * * * *` (every 2 minutes).
-5. Under **Pipeline**:
-   * **Definition**: Pipeline script from SCM.
-   * **SCM**: Select **AWS CodePipeline**.
+3. Select **Freestyle project** and click **OK**.
+4. Under **Source Code Management**:
+   * Select **AWS CodePipeline**.
    * **AWS Region**: Select your active AWS region (e.g., `eu-north-1` or `us-east-1`).
-   * **AWS Credentials**: Leave blank (if your EC2 instance has an IAM Role with CodePipeline access attached) or select your AWS credentials.
+   * **AWS Credentials**: Leave blank (relying on the EC2 IAM Instance Profile).
    * **Clear Workspace**: Check this box.
-   * **Category** (CodePipeline Action Type): Select **Build** (this must match the action type in AWS CodePipeline).
-   * **Script Path**: `Jenkinsfile`
-6. Click **Save**.
+   * **Category** (CodePipeline Action Type): Select **Build**.
+5. Under **Build Triggers**:
+   * Check **Poll SCM** and set schedule to `H/2 * * * *` (polls CodePipeline every 2 minutes).
+6. Under **Build Steps**:
+   * Click **Add build step** and choose **Execute shell**.
+   * Paste the following script:
+     ```bash
+     # 1. Read ECR Image URI from CodeBuild output artifact
+     export ECR_IMAGE_URI=$(python3 -c "import json; print(json.load(open('imageDetail.json'))['ImageURI'])")
+     echo "Deploying image: $ECR_IMAGE_URI"
+
+     # 2. Authenticate local Docker engine to AWS ECR
+     aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin $(echo $ECR_IMAGE_URI | cut -d'/' -f1)
+
+     # 3. Pull and restart the application stack locally
+     docker pull $ECR_IMAGE_URI
+     export ECR_IMAGE_URI=$ECR_IMAGE_URI
+     docker compose down --remove-orphans || true
+     docker compose up -d
+     ```
+7. Click **Save**.
 
 ---
 
