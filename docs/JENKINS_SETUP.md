@@ -126,3 +126,17 @@ Since you did not use Terraform, you must link your Jenkins server to your CodeP
     * **Project name**: `Inventory-Management-Deploy` (the exact name of the Pipeline job you created in Jenkins).
 6. Click **Done** and then **Save** in the top right of the pipeline editor.
 
+---
+
+## Troubleshooting: GzipCompressorInputStream ClassNotFoundException
+If your Jenkins build fails with a `java.lang.NoClassDefFoundError: org/apache/commons/compress/compressors/gzip/GzipCompressorInputStream` error:
+1. SSH into your EC2 instance.
+2. Download the missing JAR file directly into the plugin's private library directory and assign ownership to the `jenkins` user:
+   ```bash
+   sudo wget -O /var/lib/jenkins/plugins/aws-codepipeline/WEB-INF/lib/commons-compress-1.26.0.jar \
+     https://repo1.maven.org/maven2/org/apache/commons/commons-compress/1.26.0/commons-compress-1.26.0.jar
+   sudo chown jenkins:jenkins /var/lib/jenkins/plugins/aws-codepipeline/WEB-INF/lib/commons-compress-1.26.0.jar
+   sudo systemctl restart jenkins
+   ```
+3. Once Jenkins restarts, release the changes again in AWS CodePipeline.
+
