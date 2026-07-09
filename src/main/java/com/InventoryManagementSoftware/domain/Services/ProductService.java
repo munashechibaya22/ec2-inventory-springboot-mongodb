@@ -1,30 +1,20 @@
 package com.InventoryManagementSoftware.domain.Services;
 
 import com.InventoryManagementSoftware.application.Exception.EntityNotFoundException;
-import com.InventoryManagementSoftware.application.payload.request.ProductRequest;
-import com.InventoryManagementSoftware.application.payload.request.PurchaseRequest;
 import com.InventoryManagementSoftware.domain.Entities.TblProduct;
-import com.InventoryManagementSoftware.domain.repository.ProductRepository;
-
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
 
-
-    TblProduct saveProduct(TblProduct products);
+    TblProduct saveProduct(TblProduct product);
 
     List<TblProduct> getAllProducts();
 
     List<TblProduct> getProductByManufacturer(String manufacturer);
+
     Optional<TblProduct> getProductById(String productId);
 
-    TblProduct updateProduct(ProductRequest productRequest) throws EntityNotFoundException;
-
-
-
+    TblProduct updateProduct(TblProduct product) throws EntityNotFoundException;
 }
-

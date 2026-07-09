@@ -1,15 +1,12 @@
 package com.InventoryManagementSoftware.application.ServiceImpl;
 
 import com.InventoryManagementSoftware.application.Exception.EntityNotFoundException;
-import com.InventoryManagementSoftware.application.payload.request.ProductRequest;
-import com.InventoryManagementSoftware.application.payload.request.PurchaseRequest;
 import com.InventoryManagementSoftware.domain.Entities.TblProduct;
 import com.InventoryManagementSoftware.domain.Services.ProductService;
 import com.InventoryManagementSoftware.domain.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,13 +15,14 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
-    ProductRepository productRepository;
-
+    private ProductRepository productRepository;
 
     @Override
-    public TblProduct saveProduct(TblProduct products) {
-        products.setProductId(UUID.randomUUID().toString().split("-")[0]);
-        return productRepository.save(products);
+    public TblProduct saveProduct(TblProduct product) {
+        if (product.getProductId() == null || product.getProductId().isEmpty()) {
+            product.setProductId(UUID.randomUUID().toString().split("-")[0]);
+        }
+        return productRepository.save(product);
     }
 
     @Override
@@ -43,24 +41,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public TblProduct updateProduct(ProductRequest productRequest) {
-
-        Optional<TblProduct> existingProducts = productRepository.findById(productRequest.getProductId());
-        if (!existingProducts.isPresent()){
-            throw new EntityNotFoundException("products is not Found");
+    public TblProduct updateProduct(TblProduct product) {
+        Optional<TblProduct> existingProducts = productRepository.findByProductId(product.getProductId());
+        if (!existingProducts.isPresent()) {
+            throw new EntityNotFoundException("Product not found with id: " + product.getProductId());
         }
         TblProduct updateProducts = existingProducts.get();
-        updateProducts.setManufacturer(productRequest.getManufacturer());
-        updateProducts.setProductName(productRequest.getProductName());
-        updateProducts.setNavCode(productRequest.getNavCode());
-        updateProducts.setBarcode(productRequest.getBarcode());
-        updateProducts.setBatchExpiry(productRequest.getBatchExpiry());
-        updateProducts.setQuantity(productRequest.getQuantity());
-        updateProducts.setPrice(productRequest.getPrice());
-        updateProducts.setPipCode(productRequest.getPipCode());
-        updateProducts.setVat(productRequest.getVat());
+        updateProducts.setManufacturer(product.getManufacturer());
+        updateProducts.setProductName(product.getProductName());
+        updateProducts.setQuantity(product.getQuantity());
+        updateProducts.setBarcode(product.getBarcode());
+        updateProducts.setPipCode(product.getPipCode());
+        updateProducts.setVat(product.getVat());
+        updateProducts.setNavCode(product.getNavCode());
+        updateProducts.setPrice(product.getPrice());
+        updateProducts.setBatchExpiry(product.getBatchExpiry());
+        updateProducts.setStatus(product.getStatus());
         return productRepository.save(updateProducts);
     }
-
-
 }
