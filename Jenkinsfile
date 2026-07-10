@@ -28,7 +28,7 @@ pipeline {
                             docker pull ${env.ECR_IMAGE_URI}
                             export ECR_IMAGE_URI=${env.ECR_IMAGE_URI}
                             docker compose down --remove-orphans || true
-                            docker compose up -d
+                            docker compose up -d > /dev/null 2>&1
                         '
                     """
                 }
