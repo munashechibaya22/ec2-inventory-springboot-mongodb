@@ -1,14 +1,17 @@
+# Get AWS Account Details
+data "aws_caller_identity" "current" {}
+
 # S3 Bucket for CodePipeline Artifacts
 resource "aws_s3_bucket" "pipeline_artifacts" {
-  bucket        = "munashe-inventory-pipeline-artifacts-dev"
+  bucket        = "munashe-inventory-pipeline-artifacts-${var.environment}"
   force_destroy = true
 }
 
 # Amazon ECR Repository for Spring Boot container images
 resource "aws_ecr_repository" "inventory_app" {
-  name                 = "inventory-app-dev"
+  name                 = "inventory-app-${var.environment}"
   image_tag_mutability = "MUTABLE"
-  force_destroy        = true
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -17,7 +20,7 @@ resource "aws_ecr_repository" "inventory_app" {
 
 # IAM Role for CodeBuild
 resource "aws_iam_role" "codebuild_role" {
-  name = "inventory-codebuild-role-dev"
+  name = "inventory-codebuild-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -35,7 +38,7 @@ resource "aws_iam_role" "codebuild_role" {
 
 # IAM Policy for CodeBuild
 resource "aws_iam_role_policy" "codebuild_policy" {
-  name = "inventory-codebuild-policy-dev"
+  name = "inventory-codebuild-policy-${var.environment}"
   role = aws_iam_role.codebuild_role.id
 
   policy = jsonencode({
@@ -88,7 +91,7 @@ resource "aws_iam_role_policy" "codebuild_policy" {
 
 # CodeBuild Project Configuration
 resource "aws_codebuild_project" "build" {
-  name          = "inventory-app-build-dev"
+  name          = "inventory-app-build-${var.environment}"
   description   = "Builds the Spring Boot JAR and ECR Docker container image"
   build_timeout = "10"
   service_role  = aws_iam_role.codebuild_role.arn
@@ -98,10 +101,10 @@ resource "aws_codebuild_project" "build" {
   }
 
   environment {
-    compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:7.0"
-    type                        = "LINUX_CONTAINER"
-    privileged_mode             = true # Required to run Docker build inside CodeBuild
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:7.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true
 
     environment_variable {
       name  = "IMAGE_REPO_NAME"
@@ -120,7 +123,7 @@ resource "aws_codebuild_project" "build" {
 
 # IAM Role for CodePipeline
 resource "aws_iam_role" "codepipeline_role" {
-  name = "inventory-codepipeline-role-dev"
+  name = "inventory-codepipeline-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -138,7 +141,7 @@ resource "aws_iam_role" "codepipeline_role" {
 
 # IAM Policy for CodePipeline role
 resource "aws_iam_role_policy" "codepipeline_policy" {
-  name = "inventory-codepipeline-policy-dev"
+  name = "inventory-codepipeline-policy-${var.environment}"
   role = aws_iam_role.codepipeline_role.id
 
   policy = jsonencode({
@@ -177,18 +180,15 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
   })
 }
 
-# Get AWS Account Details
-data "aws_caller_identity" "current" {}
-
 # AWS CodeStar Connection to GitHub
 resource "aws_codestarconnections_connection" "github" {
-  name          = "github-connection-dev"
+  name          = "github-connection-${var.environment}"
   provider_type = "GitHub"
 }
 
 # CodePipeline Definition (GitHub -> CodeBuild -> Jenkins)
 resource "aws_codepipeline" "pipeline" {
-  name     = "inventory-management-pipeline-dev"
+  name     = "inventory-management-pipeline-${var.environment}"
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
@@ -210,8 +210,8 @@ resource "aws_codepipeline" "pipeline" {
 
       configuration = {
         ConnectionArn    = aws_codestarconnections_connection.github.arn
-        FullRepositoryId = "munashechibaya22/ec2-inventory-springboot-mongodb"
-        BranchName       = "main"
+        FullRepositoryId = var.repository_id
+        BranchName       = var.branch_name
       }
     }
   }
@@ -241,15 +241,15 @@ resource "aws_codepipeline" "pipeline" {
 
     action {
       name            = "JenkinsDeploy"
-      category        = "Build" # CodePipeline groups triggers under build category for Jenkins
+      category        = "Build"
       owner           = "Custom"
       provider        = "Jenkins"
       version         = "1"
       input_artifacts = ["build_output"]
 
       configuration = {
-        ProjectName = "Inventory-Management-Deploy" # Jenkins job name
-        ServerUrl   = "http://YOUR_JENKINS_EC2_PUBLIC_IP:8080"
+        ProjectName = var.jenkins_project_name
+        ServerUrl   = var.jenkins_server_url
       }
     }
   }

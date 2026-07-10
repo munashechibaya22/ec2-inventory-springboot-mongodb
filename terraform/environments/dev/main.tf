@@ -30,3 +30,12 @@ module "ec2" {
   environment        = var.environment
   tags               = var.tags
 }
+
+module "pipeline" {
+  source               = "../../modules/pipeline"
+  environment          = var.environment
+  repository_id        = "munashechibaya22/ec2-inventory-springboot-mongodb"
+  branch_name          = "main"
+  jenkins_server_url   = "http://${module.ec2.public_ip}:8080"
+  jenkins_project_name = "Inventory-Management-Deploy"
+}
